@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Tldraw } from "@tldraw/tldraw";
+import { TldrawEditor } from "@tldraw/editor";
 import "@tldraw/tldraw/tldraw.css";
 import "./App.css";
 
@@ -43,7 +43,9 @@ async function login(e) {
 
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
-      <Tldraw />
+      <TldrawEditor
+        persistenceKey="whiteboard"
+      />
     </div>
   );
 }
