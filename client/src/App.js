@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { TldrawEditor } from "@tldraw/editor";
-import "@tldraw/editor/editor.css";
+import { Tldraw } from "@tldraw/tldraw";
+import "@tldraw/tldraw/tldraw.css";
 import "./App.css";
 
 const API_BASE = process.env.REACT_APP_API_URL || "https://whiteboard-backend-production-5924.up.railway.app";
@@ -43,7 +43,7 @@ async function login(e) {
 
   return (
     <div style={{ width: "100vw", height: "100vh", overflow: "hidden" }}>
-      <TldrawEditor
+      <Tldraw
         persistenceKey="whiteboard"
       />
     </div>
