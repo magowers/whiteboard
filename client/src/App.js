@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { TldrawEditor } from "@tldraw/editor";
-import "@tldraw/tldraw/tldraw.css";
+import "@tldraw/editor/editor.css";
 import "./App.css";
 
 const API_BASE = process.env.REACT_APP_API_URL || "https://whiteboard-backend-production-5924.up.railway.app";
