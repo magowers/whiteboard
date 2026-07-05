@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Tldraw } from "@tldraw/tldraw";
 import "@tldraw/tldraw/tldraw.css";
 import "./App.css";
@@ -10,7 +10,7 @@ function App() {
   const [password, setPassword] = useState("");
   const [documentData, setDocumentData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [editor, setEditor] = useState(null);
+  const editorRef = useRef(null);
   const [saveTimeout, setSaveTimeout] = useState(null);
 
   // Load document from backend
@@ -67,7 +67,7 @@ function App() {
 
   // Handle editor mount
   const handleMount = (editorInstance) => {
-    setEditor(editorInstance);
+    editorRef.current = editorInstance;
     
     // Load backend data into editor
     if (documentData) {
