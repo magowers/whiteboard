@@ -1,5 +1,6 @@
 import express from "express";
 import session from "express-session";
+import connectSqlite3 from "connect-sqlite3";
 import bcrypt from "bcrypt";
 import helmet from "helmet";
 import cors from "cors";
@@ -13,6 +14,9 @@ const __dirname = path.dirname(__filename);
 const app = express();
 // If running behind a proxy (Railway, Netlify proxies, etc.) enable trust proxy
 app.set("trust proxy", 1);
+
+// Use a persistent SQLite-backed session store so sessions survive restarts
+const SQLiteStore = connectSqlite3(session);
 const allowedOrigins = [
   "http://localhost:3000",
   process.env.CLIENT_ORIGIN,
@@ -50,8 +54,15 @@ app.use(cors({
   credentials: true
 }));
 
+// Log incoming requests (helps debug cookies/session headers)
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} ${req.method} ${req.url} Cookies:${req.headers.cookie || ''}`);
+  next();
+});
+
 app.use(
   session({
+    store: new SQLiteStore({ db: "sessions.sqlite", dir: __dirname }),
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
