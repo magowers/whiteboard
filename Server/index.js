@@ -11,6 +11,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+// If running behind a proxy (Railway, Netlify proxies, etc.) enable trust proxy
+app.set("trust proxy", 1);
 const allowedOrigins = [
   "http://localhost:3000",
   process.env.CLIENT_ORIGIN,
@@ -55,7 +57,11 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: false, // change to true when deployed on Railway
+      // For cross-site cookies (Netlify frontend calling Railway backend) we need
+      // SameSite=None and secure=true in production. `trust proxy` must be set
+      // so Express knows it's behind HTTPS when setting the secure flag.
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 1000 * 60 * 60 * 24
     }
   })
