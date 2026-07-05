@@ -62,27 +62,33 @@ function App() {
       await loadDocument();
     } else {
       alert("Wrong password");
+      setPassword("");
     }
   }
 
   if (!loggedIn) {
     return (
-      <div style={{ padding: 40 }}>
-        <h2>Login</h2>
-        <input
-          type="password"
-          placeholder="Enter shared password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button onClick={(e) => login(e)}>Login</button>
+      <div className="login-container">
+        <div className="login-box">
+          <h2>Shared Whiteboard</h2>
+          <form onSubmit={login}>
+            <input
+              type="password"
+              placeholder="Enter password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoFocus
+            />
+            <button type="submit">Login</button>
+          </form>
+        </div>
       </div>
     );
   }
 
   if (loading) {
     return (
-      <div style={{ padding: 40 }}>
+      <div className="loading-container">
         <h2>Loading whiteboard...</h2>
       </div>
     );
