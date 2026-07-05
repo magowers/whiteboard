@@ -10,6 +10,8 @@ function App() {
   const [password, setPassword] = useState("");
   const [documentData, setDocumentData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [editor, setEditor] = useState(null);
+  const [saveTimeout, setSaveTimeout] = useState(null);
 
   // Load document from backend
   const loadDocument = async () => {
@@ -33,9 +35,10 @@ function App() {
     }
   };
 
-  // Save document to backend
-  const saveDocument = async (data) => {
+  // Save document to backend (debounced)
+  const saveDocument = async (editorInstance) => {
     try {
+      const data = editorInstance.getSnapshot();
       await fetch(`${API_BASE}/api/document`, {
         method: "POST",
         credentials: "include",
@@ -44,6 +47,31 @@ function App() {
       });
     } catch (err) {
       console.error("Error saving document:", err);
+    }
+  };
+
+  // Handle editor changes with debouncing
+  const handleChange = (editorInstance) => {
+    // Clear existing timeout
+    if (saveTimeout) {
+      clearTimeout(saveTimeout);
+    }
+    
+    // Debounce saves to avoid too many requests (save after 1 second of inactivity)
+    const timeout = setTimeout(() => {
+      saveDocument(editorInstance);
+    }, 1000);
+    
+    setSaveTimeout(timeout);
+  };
+
+  // Handle editor mount
+  const handleMount = (editorInstance) => {
+    setEditor(editorInstance);
+    
+    // Load backend data into editor
+    if (documentData) {
+      editorInstance.loadSnapshot(documentData);
     }
   };
 
@@ -97,12 +125,8 @@ function App() {
   return (
     <div style={{ width: "100vw", height: "100vh", overflow: "hidden" }}>
       <Tldraw
-        persistenceKey="whiteboard"
-        initialData={documentData}
-        onSave={(editor) => {
-          const data = editor.getSnapshot();
-          saveDocument(data);
-        }}
+        onMount={handleMount}
+        onChange={handleChange}
       />
     </div>
   );
